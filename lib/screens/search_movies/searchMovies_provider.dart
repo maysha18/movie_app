@@ -1,0 +1,33 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:movie_app/models/nowPlayingModel.dart';
+import 'package:movie_app/models/searchModel.dart';
+import 'package:movie_app/models/topRatedModel.dart';
+import 'package:movie_app/models/trendingModel.dart';
+import 'package:movie_app/services/dio_methods.dart';
+import 'package:movie_app/services/network_exceptions.dart';
+
+final searchMoviesProviderrNotifier =
+    NotifierProvider(() => SearchMoviesProvider());
+
+class SearchMoviesProvider extends Notifier {
+  Future<SearchModel> searchMovies(String url, String movieName) async {
+    try {
+      var response = await DioMethod.dioGet(url, queryParams: {
+        "language": "en-US",
+        "query": movieName,
+        "include_adult": false
+      });
+
+      return SearchModel.fromJson(response);
+    } catch (exception) {
+      final errorMessage = NetworkExceptions.getErrorMessage(exception);
+      return Future.error(errorMessage);
+    }
+  }
+
+  @override
+  build() {
+    // TODO: implement build
+    throw UnimplementedError();
+  }
+}
